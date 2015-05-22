@@ -1,0 +1,6 @@
+
+### Config perso
+
+Port PORT
+PermitRootLogin no
+AllowUsers USER

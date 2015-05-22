@@ -1,0 +1,1 @@
+INSERT INTO `domaines` ( `domaine` , `etat` ) VALUES ('votresite.com', '1');
