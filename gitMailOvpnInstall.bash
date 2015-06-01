@@ -161,8 +161,12 @@ git config --global user.email $2
 
 cat ./ressources/add_.gitconfig >> .gitconfig
 
-ssh-keygen -t rsa -C $2
+ssh-keygen -t rsa -b 4096 -C $2
+
+eval $(ssh-agent -s)
+ssh-add ~/.ssh/id_rsa
 
 read -p "Test de la connection avec github" ok
 ssh -T git@github.com
 
+read -p "Attention après le git init, ne pas oublier de faire un git remote set-url origin git@github.com:USER/REPO.git" ok

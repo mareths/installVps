@@ -6,7 +6,7 @@
 
 #############################################################
 # Installation de Vim et fail2ban
-apt-get update -y && apt-get upgrade -y && apt-get install vim fail2ban wget dos2unix -y
+apt-get update -y && apt-get upgrade -y && apt-get install vim fail2ban wget tofrodos curl -y
 
 #############################################################
 # Configuration de Vim
