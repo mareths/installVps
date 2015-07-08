@@ -11,6 +11,9 @@
 
 wget -qO- https://get.docker.com/ | sh
 
+curl -L https://github.com/docker/compose/releases/download/1.3.1/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+
 #############################################################
 # Initialisation de docker
 
@@ -22,7 +25,8 @@ wget -qO- https://get.docker.com/ | sh
 
 usermod -aG docker $1
 
-service docker start
+# Inutile sur une Ubuntu 14.10
+# service docker start
 
 #############################################################
 # Maj 1.3
@@ -34,8 +38,8 @@ service docker start
 #############################################################
 # Adjust memory and swap accounting
 
-sed -e  "s/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"cgroup_enable=memory swapaccount=1\""  /etc/default/grub
+sed -e  "s/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"cgroup_enable=memory swapaccount=1\"/"  /etc/default/grub > /etc/default/grub.tmp
+mv /etc/default/grub.tmp /etc/default/grub
 update-grub
 
-read -p "Un reboot du système est nécessaire" ok
-
+shutdown -r now

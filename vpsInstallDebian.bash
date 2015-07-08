@@ -5,8 +5,8 @@
 # $2 port ssh
 
 #############################################################
-# Installation de Vim et fail2ban
-apt-get update -y && apt-get upgrade -y && apt-get install vim fail2ban wget tofrodos curl -y
+# Installation de Vim, fail2ban et autres outils
+apt-get update -y && apt-get upgrade -y && apt-get install vim fail2ban wget tofrodos curl xauth xfonts-base x11-xserver-utils -y
 
 #############################################################
 # Configuration de Vim
@@ -41,6 +41,7 @@ passwd $1
 cat ./ressources/add_.bashrc >> /home/$1/.bashrc
 sed -e "s/\#force_color_prompt=yes/force_color_prompt=yes/" /home/$1/.bashrc > /home/$1/.bashrc.tmp
 mv /home/$1/.bashrc.tmp /home/$1/.bashrc
+chown $1:$1 /home/$1/.bashrc
 
 #############################################################
 # Config ssh
