@@ -1,2 +1,0 @@
-auth	required	pam_mysql.so	user=postfix	passwd=motdepassedb	host=127.0.0.1	db=postfix      table=comptes usercolumn=email passwdcolumn=password	crypt=1
-account	sufficient	pam_mysql.so	user=postfix	passwd=motdepassedb	host=127.0.0.1	db=postfix	table=comptes	usercolumn=email	passwdcolumn=password	crypt=1

@@ -1,7 +1,0 @@
-Alias /roundcube "/var/www/roundcube/"
-	<Directory "/var/www/roundcube">
-		Options FollowSymLinks MultiViews
-		AllowOverride All
-		Order allow,deny
-		allow from all
-        </Directory>
