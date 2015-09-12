@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="icon" href="../../favicon.ico">
+
+		<title> Installation d&#039;un serveur mail complet sous debian : Installation et préparation (1/5) - Tictech </title>
+
+		<link href="/templates/jw-theme-simpleBlue/css/highlight.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+		<!-- Bootstrap core CSS -->
+		<link href="/templates/jw-theme-simpleBlue/css/bootstrap.min.css" rel="stylesheet">
+
+		<!-- Custom styles for this template -->
+		<link href="/templates/jw-theme-simpleBlue/css/blog.css" rel="stylesheet">
+
+	  <script src="/templates/jw-theme-simpleBlue/js/jquery.min.js"></script>
+	  <script src="/templates/jw-theme-simpleBlue/js/jqcloud-1.0.4.min.js"></script>
+		<script src="/templates/jw-theme-simpleBlue/js/ie-emulation-modes-warning.js"></script>
+		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+		<!--[if lt IE 9]>
+	  <script src="/templates/jw-theme-simpleBlue/js/html5shiv.min.js"></script>
+	  <script src="/templates/jw-theme-simpleBlue/js/respond.min.js"></script>
+	  <![endif]-->
+	  
+
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+	
+	  ga('create', 'UA-58741411-1', 'auto');
+	  ga('send', 'pageview');
+	</script>
+
+
+	</head>
+
+	<body>
+
+		<div class="blog-masthead">
+			<div class="maincontainer">
+				<nav class="blog-nav col-lg-offset-3">
+					<a class="blog-nav-item active" id="home" href="/">Accueil</a>
+					<a class="blog-nav-item" id="tags" href="/tags">Tags</a>
+					<a class="blog-nav-item" id="archive" href="/archive">Archive</a>
+					<a class="blog-nav-item" href="/feed">RSS</a>
+				</nav>
+			</div>
+		</div>
+
+		<div class="maincontainer">
+
+			<div class="row">
+				<div class="col-lg-3 blog-sidebar">
+					<div class="blog-header sidebar-module">
+						<div class="row">
+							<div class="col-xs-4 col-xs-offset-4">
+								<img src="http://nicolas.cosnard.io/img/photo.png" class="img-responsive img-responsive-rounded img-small"/>
+							</div>
+						</div>
+												<h1 class="blog-title"><a href="/">Tictech</a></h1>
+																		<p class="lead blog-description">Mon coin des Internets</p>
+											</div>
+
+										<div class="sidebar-module sidebar-module-inset">
+						<h4>À propos</h4>
+						<p>Blog sans prétention d'un étudiant en informatique, je mets mes expériences, les trucs intéressants que je trouve, de l'actu, un peu tout ça en vrac ! Bonne visite ;)<br><br><br><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a><br>Sauf mention contraire, chaque article de ce blog est diffusé selon les termes de la <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Licence Creative Commons BY-NC-SA 4.0 International</a>.</p>
+					</div>
+									</div><!-- /.blog-sidebar -->
+
+
+				<div class="col-md-9 blog-main">
+					<div class="blog-post">                                                  
+	<h2 class="blog-post-title"> Installation d&#039;un serveur mail complet sous debian : Installation et préparation (1/5)</h2>
+	<p class="blog-post-meta">02/01/2015 by Niko</p>
+	<div class="blog-content">
+	<p>Cet article est le deuxième d'une série sur l'installation d'un serveur mail sur debian wheezy. Accéder aux autres articles :</p>
+
+<ul>
+<li><a href="mail_intro">Introduction</a> : Introduction et notes sur le tuto</li>
+<li>[Installation des paquets et préparation du système] : Comme son nom l'indique</li>
+<li><a href="mail_postfixadmin">Configuration de Postfixadmin</a> : Gestion des domaines et utilisateurs virtuels.</li>
+<li><a href="mail_postfix">Configuration de Postfix</a> : Le logiciel qui permet de faire du smtp : faire passer des mails de serveur en serveur.</li>
+<li><a href="mail_dovecot">Configuration de Dovecot</a> : Le logiciel qui permet de faire de l'imap : récupérer les mails qui sont arrivés et les mettre dans des jolis dossiers.</li>
+<li><a href="mail_tests">Tester la configuration et utiliser un client mail</a></li>
+<li><a href="mail_roundcube">Installation de Roundcube</a> : Le webmail, qui permet d'accéder à ses mails depuis un simple navigateur internet.</li>
+</ul>
+
+<hr />
+
+<p>C'est parti, vous êtes bien installés ? En avant !</p>
+
+<h3>Installer les paquets :</h3>
+
+<p>Toujours bon d'avoir un serveur à jour :</p>
+
+<pre><code># apt-get update
+# apt-get upgrade
+</code></pre>
+
+<p>Installation du serveur web (pour postfixadmin et roundcube). Pensez à bien noter votre mot de passe root mysql :</p>
+
+<pre><code># apt-get install apache2 php5 mysql-server
+</code></pre>
+
+<p>Pour pas se fatiguer avec l'administration des bases de données :</p>
+
+<pre><code># apt-get install phpmyadmin
+</code></pre>
+
+<p>Si vous avez exim4 (autre serveur smtp) d'installé, il faut le retirer :</p>
+
+<pre><code># apt-get purge 'exim4*'
+</code></pre>
+
+<p>Maintenant, l'installation de postfix, avec la couche mysql (les utilisateurs virtuels seront en base de données) et sasl2 pour l'authentification :</p>
+
+<pre><code># apt-get install postfix postfix-mysql libsasl2-modules sasl2-bin
+</code></pre>
+
+<p>Répondez "site internet" à la première question (les autres ne nous intéressent pas), puis donnez le nom de domaine que vous avez pris (example.org par exemple) à la suivante.</p>
+
+<p>Il faut installer postfixadmin, qui servira à gérer les domaines et utilisateurs virtuels :</p>
+
+<pre><code># apt-get install postfixadmin
+</code></pre>
+
+<p>Utilisez la configuration automatique avec apache2. Postfixadmin créée son propre utilisateur, laissez le générer un mot de passe aléatoire, nous allons créer notre propre utilisateur plus loin.</p>
+
+<p>Ensuite, installation de Dovecot :</p>
+
+<pre><code># apt-get install dovecot-mysql dovecot-pop3d dovecot-imapd dovecot-managesieved
+</code></pre>
+
+<p>Sieve permet de placer les mails automatiquement dans des dossiers (pratique !)</p>
+
+<h3>Un peu de configuration :</h3>
+
+<h4>Activation de saslauthd :</h4>
+
+<p>Tout d'abord, lors de l'installation de sasl2, on voit passer ce joli warning :</p>
+
+<pre><code>update-rc.d: warning: saslauthd stop runlevel arguments (0 1 6) do not match LSB Default-Stop values (1) To enable saslauthd, edit /etc/default/saslauthd and set START=yes ... (warning).
+</code></pre>
+
+<p>Pour corriger ça, c'est pas très compliqué, d'autant qu'il nous dit comment faire : il faut passer le champ <code>START</code> à la valeur "yes" dans le fichier <code>/etc/default/saslauthd</code>, puis le redémarrer :</p>
+
+<pre><code># vim /etc/default/saslauthd
+# service saslauthd start
+</code></pre>
+
+<h4>Création de la base de données :</h4>
+
+<p>Lors de l'installation de postfixadmin, la base de données à été crée automatiquement, et un utilisateur a été créé pour manipuler les comptes virtuels. Toutefois, pour des raisons de sécurité, le démon Postfix utilisera un autre utilisateur pour accéder à ces données, qui ne pourra que les lire.</p>
+
+<p>Pour cela, accédez à phpmyadmin (<code>http://example.org/phpmyadmin</code> par défaut), connectez vous en tant que root avec le mot de passe spécifié à l'installation de mysql-server.</p>
+
+<p>Une fois connecté, cliquez sur l'onglet "Privilèges" :</p>
+
+<p><img src="http://img.tictech.info/mail_prepa_01.png" alt="Privilèges dans Phpmyadmin" /></p>
+
+<p>En bas du tableau des utilisateurs, cliquez sur "Ajouter un utilisateur". Pour le tutorial, on appellera l'utilisateur <strong>mailuser</strong> avec le mot de pass <em>azerty</em>. Bien entendu prenez un mot de passe solide. Si vous modifiez le nom, pensez à répercuter la modification dans la suite du tutoriel.<br />
+<strong>Pensez à forcer le client en Local uniquement (valeur localhost). Personne n'est censé se connecter à cet utilisateur depuis l'extérieur.</strong></p>
+
+<p>Une fois l'utilisateur créé, cliquez dans sa ligne sur le lien <code>Changer les privilèges</code> :</p>
+
+<p><img src="http://img.tictech.info/mail_prepa_02.png" alt="Changement de privilèges dans Phpmyadmin" /></p>
+
+<p>Scrollez un peu pour découvrir les "Privilèges spécifiques à une base de données", et ajoutez des privilèges pour la base de données <code>postfixadmin</code> :</p>
+
+<p><img src="http://img.tictech.info/mail_prepa_03.png" alt="Privilèges spécifiques" /></p>
+
+<p>Donnez <strong>UNIQUEMENT</strong> le droit "select" : il n'y a rien besoin d'autre.</p>
+
+<p>Et voila ! La partie base de données est prête !</p>
+
+<h4>Enregistrement DNS :</h4>
+
+<p>Pour indiquer au monde entier que c'est votre serveur qui s'occupe des mails pour votre domaine, il faut ajouter un resource record DNS de type MX. Concrètement, si vous avez votre propre serveur DNS, il faut modifier le ficher <code>/etc/bind/db.example.org</code>. Si vous utilisez le DNS de votre hébergeur, allez chercher dans les menus "Zone DNS". Il faut rajouter un enregistrement comme ceci :</p>
+
+<pre><code>@   IN  MX  10  1.2.3.4 ;bien sur mettez votre propre IP ici !
+</code></pre>
+
+<p>On en profite pour rajouter un sous domaine utile :</p>
+
+<pre><code>mail    IN  A   1.2.3.4 ;idem
+</code></pre>
+
+<p>Et voila ! Il n'y a plus qu'a attendre qu'il se propage.</p>
+
+<h4>Utilisateur vmail :</h4>
+
+<p>L'utilisateur vmail sera celui qui va gérer les emails :</p>
+
+<pre><code class="bash"># groupadd -g 5000 vmail
+#  useradd -g vmail -u 5000 vmail -d /var/vmail -m
+</code></pre>
+
+<p>Son home directory (/var/vmail) va contenir tous les mails reçus sur le système.</p>
+
+<h3>Préparer les certificats :</h3>
+
+<p>Pour être un peu tranquilles (un peu de chiffrement n'a jamais tué) on va utiliser des connexions chiffrées. Ca retiendra pas la NSA, mais ça embêtera les pirates du dimanche.</p>
+
+<pre><code># openssl req -new -x509 -days 3650 -nodes -newkey rsa:4096 -out /etc/ssl/certs/mailserver.pem -keyout /etc/ssl/private/mailserver.pem
+</code></pre>
+
+<p>Répondez aux questions qui sont posées. Si vous ne voulez rien mettre dans le champ, mettez un point ".".<br />
+Dans le champ <strong>Organization Name</strong>, mettez votre nom <code>Joe Bob</code>.<br />
+Dans le champ <strong>Common Name</strong>, mettez votre nom de domaine <code>example.org</code>.</p>
+
+<p>Votre certificat est généré et placé dans <code>/etc/ssl/certs/mailserver.pem</code>.</p>
+
+<p>Voila pour l'installation ! Prochaine étape : postfixadmin et les utilisateurs virtuels !</p>
+
+	</div>
+    <div class="blog-post-tags">
+					<div class="tags">
+				Tags：
+									<a href="/tags/sysadmin">sysadmin</a>
+			    					<a href="/tags/mail">mail</a>
+			    					<a href="/tags/tuto">tuto</a>
+			    					<a href="/tags/ssl">ssl</a>
+			    					<a href="/tags/mysql">mysql</a>
+			    			</div>
+            </div>
+    <div id="disqus_thread"></div>
+  <script type="text/javascript">
+      var disqus_shortname = "tictechinfo"; 
+      (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  
+</div>
+
+				</div><!-- /.blog-main -->
+
+			</div><!-- /.row -->
+
+		</div><!-- /.container -->
+
+
+		<footer class="blog-footer">
+	<p>
+		Copyright © 2014 - Niko -
+		Powered by  <a target='_blank' href="http://github.com/hjue/JustWriting">JustWriting</a> and <a target='_blank' href="http://getbootstrap.com">Bootstrap</a>. Theme by <a target='_blank' href="https://github.com/ncosnard">ncosnard</a>.</p>
+	<p>
+	<a href="#">Back to top</a>
+	</p>
+</footer>
+
+
+		<!-- Bootstrap core JavaScript
+	  ================================================== -->
+	  <!-- Placed at the end of the document so the pages load faster -->
+	  <script>
+		var url = document.URL;
+		if(url.match(/tag/)){
+			$(".blog-nav-item").removeClass("active");
+			$("#tags").addClass("active");		
+		}else if(url.match(/archive/)){
+			$(".blog-nav-item").removeClass("active");
+			$("#archive").addClass("active");		
+
+		}
+	  </script>
+
+	  <script src="/templates/jw-theme-simpleBlue/js/bootstrap.min.js"></script>
+	  <script src="/templates/jw-theme-simpleBlue/js/docs.min.js"></script>
+	  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+	  <script src="/templates/jw-theme-simpleBlue/js/ie10-viewport-bug-workaround.js"></script>
+	        
+		  <link rel="stylesheet" href="/styles/highlight/styles/monokai_sublime.css">
+		  <script src="/styles/highlight/highlight.pack.js"></script>
+		  <script>hljs.initHighlightingOnLoad();</script>
+	  	</body>
+</html>

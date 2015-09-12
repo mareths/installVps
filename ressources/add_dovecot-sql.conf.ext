@@ -1,0 +1,6 @@
+
+### Config perso
+
+driver = mysql
+connect = host=127.0.0.1 dbname=postfixadmin user=MAILUSER password=PWD_MAILUSER
+password_query = SELECT username,domain,password FROM mailbox WHERE username='%u';

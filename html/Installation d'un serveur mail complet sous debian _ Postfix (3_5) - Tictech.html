@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="icon" href="../../favicon.ico">
+
+		<title> Installation d&#039;un serveur mail complet sous debian : Postfix (3/5) - Tictech </title>
+
+		<link href="/templates/jw-theme-simpleBlue/css/highlight.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+		<!-- Bootstrap core CSS -->
+		<link href="/templates/jw-theme-simpleBlue/css/bootstrap.min.css" rel="stylesheet">
+
+		<!-- Custom styles for this template -->
+		<link href="/templates/jw-theme-simpleBlue/css/blog.css" rel="stylesheet">
+
+	  <script src="/templates/jw-theme-simpleBlue/js/jquery.min.js"></script>
+	  <script src="/templates/jw-theme-simpleBlue/js/jqcloud-1.0.4.min.js"></script>
+		<script src="/templates/jw-theme-simpleBlue/js/ie-emulation-modes-warning.js"></script>
+		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+		<!--[if lt IE 9]>
+	  <script src="/templates/jw-theme-simpleBlue/js/html5shiv.min.js"></script>
+	  <script src="/templates/jw-theme-simpleBlue/js/respond.min.js"></script>
+	  <![endif]-->
+	  
+
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+	
+	  ga('create', 'UA-58741411-1', 'auto');
+	  ga('send', 'pageview');
+	</script>
+
+
+	</head>
+
+	<body>
+
+		<div class="blog-masthead">
+			<div class="maincontainer">
+				<nav class="blog-nav col-lg-offset-3">
+					<a class="blog-nav-item active" id="home" href="/">Accueil</a>
+					<a class="blog-nav-item" id="tags" href="/tags">Tags</a>
+					<a class="blog-nav-item" id="archive" href="/archive">Archive</a>
+					<a class="blog-nav-item" href="/feed">RSS</a>
+				</nav>
+			</div>
+		</div>
+
+		<div class="maincontainer">
+
+			<div class="row">
+				<div class="col-lg-3 blog-sidebar">
+					<div class="blog-header sidebar-module">
+						<div class="row">
+							<div class="col-xs-4 col-xs-offset-4">
+								<img src="http://nicolas.cosnard.io/img/photo.png" class="img-responsive img-responsive-rounded img-small"/>
+							</div>
+						</div>
+												<h1 class="blog-title"><a href="/">Tictech</a></h1>
+																		<p class="lead blog-description">Mon coin des Internets</p>
+											</div>
+
+										<div class="sidebar-module sidebar-module-inset">
+						<h4>À propos</h4>
+						<p>Blog sans prétention d'un étudiant en informatique, je mets mes expériences, les trucs intéressants que je trouve, de l'actu, un peu tout ça en vrac ! Bonne visite ;)<br><br><br><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a><br>Sauf mention contraire, chaque article de ce blog est diffusé selon les termes de la <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Licence Creative Commons BY-NC-SA 4.0 International</a>.</p>
+					</div>
+									</div><!-- /.blog-sidebar -->
+
+
+				<div class="col-md-9 blog-main">
+					<div class="blog-post">                                                  
+	<h2 class="blog-post-title"> Installation d&#039;un serveur mail complet sous debian : Postfix (3/5)</h2>
+	<p class="blog-post-meta">03/01/2015 by Niko</p>
+	<div class="blog-content">
+	<p>Cet article est le quatrième d'une série sur l'installation d'un serveur mail sur debian wheezy. Accéder aux autres articles :</p>
+
+<ul>
+<li><a href="mail_intro">Introduction</a> : Introduction et notes sur le tuto</li>
+<li><a href="mail_preparation">Installation des paquets et préparation du système</a> : Comme son nom l'indique</li>
+<li><a href="mail_postfixadmin">Configuration de Postfixadmin</a> : Gestion des domaines et utilisateurs virtuels.</li>
+<li>[Configuration de Postfix] : Le logiciel qui permet de faire du smtp : faire passer des mails de serveur en serveur.</li>
+<li><a href="mail_dovecot">Configuration de Dovecot</a> : Le logiciel qui permet de faire de l'imap : récupérer les mails qui sont arrivés et les mettre dans des jolis dossiers.</li>
+<li><a href="mail_tests">Tester la configuration et utiliser un client mail</a></li>
+<li><a href="mail_roundcube">Installation de Roundcube</a> : Le webmail, qui permet d'accéder à ses mails depuis un simple navigateur internet.</li>
+</ul>
+
+<hr />
+
+<p>Maintenant qu'on a des adresses mail, il pourrait être pratique qu'elles puisse échanger des messages. C'est ce que permet postfix : faire passer des mails d'un serveur à l'autre. Il faut donc relier postfix à la base de données</p>
+
+<h4>Domaines :</h4>
+
+<p>Pour que postfix ait accès aux domaines, il faut écrire le code suivant dans <code>/etc/postfix/mysql-virtual-mailbox-domains.cf</code> :</p>
+
+<pre><code>    user = mailuser
+    password = azerty
+    hosts = 127.0.0.1
+    dbname = postfixadmin
+    query = SELECT 1 FROM domain WHERE domain='%s'
+</code></pre>
+
+<p><em>(Pensez à mettre votre mot de passe pour l'utilisateur mailuser)</em></p>
+
+<p>Ce fichier va permettre à postfix, quand il reçoit un mail destiné à user@example.org, de déterminer si notre serveur est bien en charge du domaine <em>example.org</em>. Si c'est le cas, ça veut dire que le domaine se trouve dans notre base de données. Il faut qu'en executant la requête "query", un élément quelconque soit retourné, et rien si le domaine n'est pas présent.</p>
+
+<blockquote>
+  <p>Attention !
+    Ici, il n'est pas identique de marquer "localhost" et "127.0.0.1" dans le champ hosts. En effet, si vous mettez "localhost", postfix va chercher la socket UNIX de mysql, qui ne sera pas présente. Alors qu'en mettant l'IP, postfix va effectuer une connexion tcp sur le port de mysql.</p>
+</blockquote>
+
+<p>Pour l'activez, lancez la commande :</p>
+
+<pre><code># postconf -e virtual_mailbox_domains=mysql:/etc/postfix/mysql-virtual-mailbox-domains.cf
+</code></pre>
+
+<p>Cela ajoute la configuration au fichier /etc/postfix/main.cf et recharge automatiquement la configuration de postfix, évitant d'avoir à le faire à la main.</p>
+
+<p>Pour tester si la recherche de domaine fonctionne bien, vous pouvez lancer la commande suivante :</p>
+
+<pre><code># postmap -q example.org mysql:/etc/postfix/mysql-virtual-mailbox-domains.cf
+</code></pre>
+
+<p>Si le domaine <code>example.org</code> est présent dans vos domaines, la valeur "1" sera affichée, sinon rien.</p>
+
+<h4>Boites mails</h4>
+
+<p>Ensuite, il faut vérifier si la boite mail existe, exactement comme avec les domaines. Cette fois ci on écrit dans le fichier <code>/etc/postfix/mysql-virtual-mailbox-maps.cf</code> :</p>
+
+<pre><code>user = mailuser
+password = azerty
+hosts = 127.0.0.1
+dbname = postfixadmin
+query = SELECT 1 FROM mailbox WHERE username='%s'
+</code></pre>
+
+<p>Pour activer :</p>
+
+<pre><code># postconf -e virtual_mailbox_maps=mysql:/etc/postfix/mysql-virtual-mailbox-maps.cf
+</code></pre>
+
+<p>Et pour tester :</p>
+
+<pre><code># postmap -q john@example.org mysql:/etc/postfix/mysql-virtual-mailbox-maps.cf
+</code></pre>
+
+<p>Comme pour le domaine, le résultat est 1 si la boite existe, rien sinon.</p>
+
+<h4>Gestion des alias</h4>
+
+<p>Il faut maintenant rediriger les alias vers les utilisateurs existant. Dans le fichier <code>/etc/postfix/mysql-virtual-alias-maps.cf</code> :</p>
+
+<pre><code>user = mailuser
+password = azerty
+hosts = 127.0.0.1
+dbname = postfixadmin
+query = SELECT goto FROM alias WHERE address='%s'
+</code></pre>
+
+<p>Pour activer :</p>
+
+<pre><code># postconf -e virtual_alias_maps=mysql:/etc/postfix/mysql-virtual-alias-maps.cf
+</code></pre>
+
+<p>Pour tester :</p>
+
+<pre><code># postmap -q abuse@example.org mysql:/etc/postfix/mysql-virtual-alias-maps.cf
+</code></pre>
+
+<p>Ici le résultat n'est plus le même : c'est l'utilisateur destination qui doit s'afficher, ce qui permet à postfix de faire la correspondance.</p>
+
+<p>Dernière étape <strong>très importante</strong> : modifier les droits de ces trois fichiers. En effet, ils contiennent en clair des mots de passe SQL. Lancez les deux commandes :</p>
+
+<pre><code># chgrp postfix /etc/postfix/mysql-*.cf
+# chmod u=rw,g=r,o= /etc/postfix/mysql-*.cf
+</code></pre>
+
+<p>Comme ça postfix peut continuer à lire les configurations, et les visiteurs indiscrets ne peuvent pas.</p>
+
+<hr />
+
+<h4>Activation du port 587</h4>
+
+<p>Beaucoup de FAI bloquent le port 25 (smtp) pour éviter les serveurs de spam. Du coup on utilise le port 587 qui est un port alternatif "standard".</p>
+
+<p>Pour le débloquer, il faut modifier le fichier <code>/etc/postfix/master.cf</code> et décommenter la ligne :</p>
+
+<pre><code>submission inet n       -       -       -       -       smtpd
+</code></pre>
+
+<hr />
+
+<h4>Activation de SASL</h4>
+
+<p>Sasl permet de forcer l'authentification pour envoyer des mails, ce qui évite que n'importe quel spammer utilise votre serveur comme relai. Pour activer sasl avec postfix, modifiez le fichier <code>/etc/postfix/main.cf</code> en ajoutant les lignes suivantes :</p>
+
+<pre><code>smtpd_sasl_type = dovecot
+smtpd_sasl_path = private/auth
+smtpd_sasl_auth_enable = yes
+smtpd_tls_security_level = may
+smtpd_tls_auth_only = yes
+smtpd_recipient_restrictions = permit_mynetworks permit_sasl_authenticated reject_unauth_destination
+</code></pre>
+
+<p>Ici on voit plusieurs choses :</p>
+
+<ul>
+<li>auth_enable : on active l'authentification</li>
+<li>tls_auth_only : on active l'authentification uniquement pour ceux qui ont une connexion TLS. Cela evite que votre mot de passe circule en clair.</li>
+<li>recipient restrictions : on autorise uniquement les connexions en provenance des IP spécifiées dans "mynetwork", les personnes authentifiées correctement avec SASL (et donc avec TLS) et on autorise de relever les mails destinés aux utilisateurs du système.</li>
+</ul>
+
+<p>La ligne la plus importante est la première : elle permet de faire passer l'authentification par dovecot. En effet l'authentification par SASL en passant par postfix est une usine à gaz. Ici, Postfix demande a SASL l'authentification, qui demande à Dovecot. Simple non ?</p>
+
+<hr />
+
+<p>Et voila pour postfix ! Prochaine étape : dovecot, pour mettre les mails dans les boites respectives !</p>
+
+	</div>
+    <div class="blog-post-tags">
+					<div class="tags">
+				Tags：
+									<a href="/tags/sysadmin">sysadmin</a>
+			    					<a href="/tags/mail">mail</a>
+			    					<a href="/tags/tuto">tuto</a>
+			    					<a href="/tags/postfix">postfix</a>
+			    			</div>
+            </div>
+    <div id="disqus_thread"></div>
+  <script type="text/javascript">
+      var disqus_shortname = "tictechinfo"; 
+      (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  
+</div>
+
+				</div><!-- /.blog-main -->
+
+			</div><!-- /.row -->
+
+		</div><!-- /.container -->
+
+
+		<footer class="blog-footer">
+	<p>
+		Copyright © 2014 - Niko -
+		Powered by  <a target='_blank' href="http://github.com/hjue/JustWriting">JustWriting</a> and <a target='_blank' href="http://getbootstrap.com">Bootstrap</a>. Theme by <a target='_blank' href="https://github.com/ncosnard">ncosnard</a>.</p>
+	<p>
+	<a href="#">Back to top</a>
+	</p>
+</footer>
+
+
+		<!-- Bootstrap core JavaScript
+	  ================================================== -->
+	  <!-- Placed at the end of the document so the pages load faster -->
+	  <script>
+		var url = document.URL;
+		if(url.match(/tag/)){
+			$(".blog-nav-item").removeClass("active");
+			$("#tags").addClass("active");		
+		}else if(url.match(/archive/)){
+			$(".blog-nav-item").removeClass("active");
+			$("#archive").addClass("active");		
+
+		}
+	  </script>
+
+	  <script src="/templates/jw-theme-simpleBlue/js/bootstrap.min.js"></script>
+	  <script src="/templates/jw-theme-simpleBlue/js/docs.min.js"></script>
+	  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+	  <script src="/templates/jw-theme-simpleBlue/js/ie10-viewport-bug-workaround.js"></script>
+	        
+		  <link rel="stylesheet" href="/styles/highlight/styles/monokai_sublime.css">
+		  <script src="/styles/highlight/highlight.pack.js"></script>
+		  <script>hljs.initHighlightingOnLoad();</script>
+	  	</body>
+</html>

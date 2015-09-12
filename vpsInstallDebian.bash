@@ -6,7 +6,7 @@
 
 #############################################################
 # Installation de Vim, fail2ban et autres outils
-apt-get update -y && apt-get upgrade -y && apt-get install vim fail2ban wget tofrodos curl xauth xfonts-base x11-xserver-utils -y
+apt-get update -y && apt-get upgrade -y && apt-get install vim fail2ban wget tofrodos curl xauth xfonts-base x11-xserver-utils tree -y
 
 #############################################################
 # Configuration de Vim

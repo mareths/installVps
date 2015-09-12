@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="icon" href="../../favicon.ico">
+
+		<title> Installation d&#039;un serveur mail complet sous debian : Intro (0/5) - Tictech </title>
+
+		<link href="/templates/jw-theme-simpleBlue/css/highlight.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+		<!-- Bootstrap core CSS -->
+		<link href="/templates/jw-theme-simpleBlue/css/bootstrap.min.css" rel="stylesheet">
+
+		<!-- Custom styles for this template -->
+		<link href="/templates/jw-theme-simpleBlue/css/blog.css" rel="stylesheet">
+
+	  <script src="/templates/jw-theme-simpleBlue/js/jquery.min.js"></script>
+	  <script src="/templates/jw-theme-simpleBlue/js/jqcloud-1.0.4.min.js"></script>
+		<script src="/templates/jw-theme-simpleBlue/js/ie-emulation-modes-warning.js"></script>
+		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+		<!--[if lt IE 9]>
+	  <script src="/templates/jw-theme-simpleBlue/js/html5shiv.min.js"></script>
+	  <script src="/templates/jw-theme-simpleBlue/js/respond.min.js"></script>
+	  <![endif]-->
+	  
+
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+	
+	  ga('create', 'UA-58741411-1', 'auto');
+	  ga('send', 'pageview');
+	</script>
+
+
+	</head>
+
+	<body>
+
+		<div class="blog-masthead">
+			<div class="maincontainer">
+				<nav class="blog-nav col-lg-offset-3">
+					<a class="blog-nav-item active" id="home" href="/">Accueil</a>
+					<a class="blog-nav-item" id="tags" href="/tags">Tags</a>
+					<a class="blog-nav-item" id="archive" href="/archive">Archive</a>
+					<a class="blog-nav-item" href="/feed">RSS</a>
+				</nav>
+			</div>
+		</div>
+
+		<div class="maincontainer">
+
+			<div class="row">
+				<div class="col-lg-3 blog-sidebar">
+					<div class="blog-header sidebar-module">
+						<div class="row">
+							<div class="col-xs-4 col-xs-offset-4">
+								<img src="http://nicolas.cosnard.io/img/photo.png" class="img-responsive img-responsive-rounded img-small"/>
+							</div>
+						</div>
+												<h1 class="blog-title"><a href="/">Tictech</a></h1>
+																		<p class="lead blog-description">Mon coin des Internets</p>
+											</div>
+
+										<div class="sidebar-module sidebar-module-inset">
+						<h4>À propos</h4>
+						<p>Blog sans prétention d'un étudiant en informatique, je mets mes expériences, les trucs intéressants que je trouve, de l'actu, un peu tout ça en vrac ! Bonne visite ;)<br><br><br><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a><br>Sauf mention contraire, chaque article de ce blog est diffusé selon les termes de la <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Licence Creative Commons BY-NC-SA 4.0 International</a>.</p>
+					</div>
+									</div><!-- /.blog-sidebar -->
+
+
+				<div class="col-md-9 blog-main">
+					<div class="blog-post">                                                  
+	<h2 class="blog-post-title"> Installation d&#039;un serveur mail complet sous debian : Intro (0/5)</h2>
+	<p class="blog-post-meta">01/01/2015 by Niko</p>
+	<div class="blog-content">
+	<p>Sur mon serveur entre autres services j'ai mon propre serveur mail. Cela me permet 1 d'apprendre comment ça marche et 2 d'avoir la main sur ce service (même si j'utilise pas mal gmail à coté...). J'ai donc dû installer et configurer les différents outils pour faire tourner un serveur mail complet.</p>
+
+<p>J'ai passé pas mal de temps à écumer les différents tutos et j'ai jamais trouvé un truc propre et efficace, qui marchait et qui expliquait comment ça marchait. Et les docs sont franchement indigestes. Donc, après pas mal d'essais divers et variés, je vous livre ma config qui marche (bien même) et qui est somme toute plutôt propre. Le tuto va être en plusieurs parties vu qu'il y a plusieurs logiciels :</p>
+
+<ul>
+<li>[Introduction] : Bah, ce que vous êtes en train de lire en fait.</li>
+<li><a href="mail_preparation">Installation des paquets et préparation du système</a> : Comme son nom l'indique</li>
+<li><a href="mail_postfixadmin">Configuration de Postfixadmin</a> : Gestion des domaines et utilisateurs virtuels.</li>
+<li><a href="mail_postfix">Configuration de Postfix</a> : Le logiciel qui permet de faire du smtp : faire passer des mails de serveur en serveur.</li>
+<li><a href="mail_dovecot">Configuration de Dovecot</a> : Le logiciel qui permet de faire de l'imap : récupérer les mails qui sont arrivés et les mettre dans des jolis dossiers.</li>
+<li><a href="mail_tests">Tester la configuration et utiliser un client mail</a></li>
+<li><a href="mail_roundcube">Installation de Roundcube</a> : Le webmail, qui permet d'accéder à ses mails depuis un simple navigateur internet.</li>
+</ul>
+
+<p>Concernant la configuration, on voit que je n'utilise rien d'exotique. Je suis comme d'habitude sur une debian 7 (wheezy, stable).</p>
+
+<p>Toutefois, deux trois choses à noter :</p>
+
+<ul>
+<li>Je suppose que vous avez déjà un <strong>serveur DNS</strong> (bind) qui tourne, soit sur votre machine soit chez un hébergeur, sur lequel vous pouvez modifier les enregistrements.</li>
+<li>Vu le point précédent, je suppose que vous avez aussi au moins <strong>un nom de domaine</strong> (voire plusieurs !).</li>
+<li>Enfin, je travaille avec des <strong>utilisateurs virtuels</strong> : tout est en base de données, ce qui a à mon sens de nombreux avantages. Mais change pas mal la config.</li>
+</ul>
+
+<p>Je vais écrire ce tuto en plusieurs fois, mais promis, j'essaie de faire ça vite ;)</p>
+
+	</div>
+    <div class="blog-post-tags">
+					<div class="tags">
+				Tags：
+									<a href="/tags/sysadmin">sysadmin</a>
+			    					<a href="/tags/mail">mail</a>
+			    					<a href="/tags/tuto">tuto</a>
+			    			</div>
+            </div>
+    <div id="disqus_thread"></div>
+  <script type="text/javascript">
+      var disqus_shortname = "tictechinfo"; 
+      (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  
+</div>
+
+				</div><!-- /.blog-main -->
+
+			</div><!-- /.row -->
+
+		</div><!-- /.container -->
+
+
+		<footer class="blog-footer">
+	<p>
+		Copyright © 2014 - Niko -
+		Powered by  <a target='_blank' href="http://github.com/hjue/JustWriting">JustWriting</a> and <a target='_blank' href="http://getbootstrap.com">Bootstrap</a>. Theme by <a target='_blank' href="https://github.com/ncosnard">ncosnard</a>.</p>
+	<p>
+	<a href="#">Back to top</a>
+	</p>
+</footer>
+
+
+		<!-- Bootstrap core JavaScript
+	  ================================================== -->
+	  <!-- Placed at the end of the document so the pages load faster -->
+	  <script>
+		var url = document.URL;
+		if(url.match(/tag/)){
+			$(".blog-nav-item").removeClass("active");
+			$("#tags").addClass("active");		
+		}else if(url.match(/archive/)){
+			$(".blog-nav-item").removeClass("active");
+			$("#archive").addClass("active");		
+
+		}
+	  </script>
+
+	  <script src="/templates/jw-theme-simpleBlue/js/bootstrap.min.js"></script>
+	  <script src="/templates/jw-theme-simpleBlue/js/docs.min.js"></script>
+	  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+	  <script src="/templates/jw-theme-simpleBlue/js/ie10-viewport-bug-workaround.js"></script>
+	        
+		  <link rel="stylesheet" href="/styles/highlight/styles/monokai_sublime.css">
+		  <script src="/styles/highlight/highlight.pack.js"></script>
+		  <script>hljs.initHighlightingOnLoad();</script>
+	  	</body>
+</html>
